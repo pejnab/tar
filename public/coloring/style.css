@@ -72,25 +72,42 @@ header h1 {
 
 .toolbar {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 10px;
     background-color: #1e1e1e;
+    flex-wrap: wrap;
 }
 
-#color-palette {
+.tool-group {
     display: flex;
+    align-items: center;
+    margin: 5px;
 }
 
-.color-box {
-    width: 30px;
-    height: 30px;
-    border: 2px solid white;
-    margin: 0 5px;
+.tool-btn {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: 8px 12px;
     cursor: pointer;
+}
+
+.tool-btn.active {
+    background-color: #bb86fc;
+    color: #121212;
+}
+
+#color-picker-input {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: 8px;
 }
 
 #coloring-area {
     flex-grow: 1;
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -98,7 +115,17 @@ header h1 {
     padding: 20px;
 }
 
+#coloring-area #fill-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
 #coloring-area svg {
+    position: relative;
+    z-index: 2;
     max-width: 100%;
     max-height: 100%;
 }
