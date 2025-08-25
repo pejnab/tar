@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coloring Page</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="coloring-container">
+        <div class="toolbar">
+            <!-- Coloring tools will go here -->
+            <div id="color-palette"></div>
+            <button id="save-btn">Save as Image</button>
+            <button id="save-pdf-btn">Save as PDF</button>
+        </div>
+        <div id="coloring-area">
+            <!-- SVG will be loaded here -->
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+    <script src="coloring.js"></script>
+</body>
+</html>

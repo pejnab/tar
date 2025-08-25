@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Coloring Book</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Admin Panel</h1>
+        </header>
+        <main>
+            <section id="collections">
+                <h2>Collections</h2>
+                <div id="collection-list">
+                    <!-- Collections will be dynamically added here -->
+                </div>
+                <button id="add-collection-btn">Add Collection</button>
+            </section>
+            <section id="designs">
+                <h2>Designs</h2>
+                <div id="design-list">
+                    <!-- Designs will be dynamically added here -->
+                </div>
+                <button id="upload-design-btn">Upload Design</button>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Collection Modal -->
+    <div id="add-collection-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Add New Collection</h2>
+            <input type="text" id="collection-name-input" placeholder="Collection Name">
+            <button id="save-collection-btn">Save Collection</button>
+        </div>
+    </div>
+
+    <!-- Upload Design Modal -->
+    <div id="upload-design-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Upload New Design</h2>
+            <select id="collection-select">
+                <!-- Options will be populated dynamically -->
+            </select>
+            <input type="file" id="design-file-input" accept=".svg">
+            <button id="save-design-btn">Save Design</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+    <script src="script.js"></script>
+
+    <!-- Share Collection Modal -->
+    <div id="share-collection-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Share Collection</h2>
+            <p>Scan the QR code or copy the link below.</p>
+            <div id="qr-code-container"></div>
+            <input type="text" id="collection-link-input" readonly>
+        </div>
+    </div>
+</body>
+</html>

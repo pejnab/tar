@@ -1,0 +1,12 @@
+<svg width="500" height="500" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    path, circle, rect {
+      fill: #ccc;
+      stroke: #000;
+      stroke-width: 2;
+    }
+  </style>
+  <rect x="50" y="50" width="400" height="400" />
+  <circle cx="250" cy="250" r="100" />
+  <path d="M150 150 L350 150 L350 350 Z" />
+</svg>
