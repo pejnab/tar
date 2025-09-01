@@ -68,6 +68,11 @@ try {
 require_once __DIR__ . '/../templates/admin_header.php';
 ?>
 
+<div style="margin-bottom: 20px;">
+    <a href="collections.php" class="btn">Manage Collections</a>
+    <a href="statistics.php" class="btn btn-secondary">View Statistics</a>
+</div>
+
 <h2>Manage Collections</h2>
 
 <!-- Display Messages -->
@@ -119,8 +124,9 @@ require_once __DIR__ . '/../templates/admin_header.php';
                                 <input type="hidden" name="id" value="<?php echo $collection['id']; ?>">
                                 <button type="submit" name="delete_collection" class="btn btn-danger">Delete</button>
                             </form>
-                            <a href="designs.php?collection_id=<?php echo $collection['id']; ?>" class="btn" style="margin-left: 5px;">Manage Designs</a>
-                            <a href="edit_collection.php?id=<?php echo $collection['id']; ?>" class="btn btn-secondary" style="margin-left: 5px;">Settings</a>
+                            <a href="designs.php?collection_id=<?php echo $collection['id']; ?>" class="btn">Designs</a>
+                            <a href="edit_collection.php?id=<?php echo $collection['id']; ?>" class="btn btn-secondary">Settings</a>
+                            <a href="qrcode.php?token=<?php echo $collection['share_token']; ?>" class="btn" target="_blank" title="Show QR Code" style="padding: 10px 12px;">QR</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
