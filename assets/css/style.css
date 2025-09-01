@@ -1,0 +1,185 @@
+/* Public-Facing Dark Theme */
+:root {
+    --bg-color: #121212;
+    --primary-surface: #1e1e1e;
+    --secondary-surface: #2a2a2a;
+    --accent-color: #bb86fc;
+    --accent-variant: #3700b3;
+    --font-color: #e1e1e1;
+    --font-color-secondary: #a0a0a0;
+    --border-color: #333;
+    --error-color: #cf6679;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--font-color);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: var(--primary-surface);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    text-align: center;
+}
+
+h1, h2 {
+    color: var(--accent-color);
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+h2 {
+    margin-top: 0;
+    color: var(--font-color-secondary);
+    font-weight: 400;
+}
+
+/* --- Forms --- */
+.token-form {
+    margin-top: 30px;
+}
+
+input[type="text"] {
+    padding: 15px;
+    font-size: 1.2em;
+    width: 70%;
+    max-width: 400px;
+    border: 2px solid var(--border-color);
+    background-color: var(--secondary-surface);
+    color: var(--font-color);
+    border-radius: 8px;
+    text-align: center;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.btn {
+    display: inline-block;
+    padding: 15px 30px;
+    margin-top: 20px;
+    border-radius: 8px;
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: var(--accent-variant);
+    color: var(--font-color);
+}
+
+/* --- Collection View --- */
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.design-card {
+    background-color: var(--secondary-surface);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    color: var(--font-color);
+    border: 1px solid var(--border-color);
+}
+
+.design-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.5);
+}
+
+.design-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background-color: #fff; /* White background for transparent images */
+}
+
+.design-card-title {
+    padding: 15px;
+    font-weight: bold;
+}
+
+/* --- Coloring App --- */
+#coloring-app {
+    display: flex;
+    width: 100%;
+    height: 80vh;
+    gap: 20px;
+}
+
+#toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    background-color: var(--primary-surface);
+    border-radius: 8px;
+}
+
+#canvas-container {
+    flex-grow: 1;
+    background-color: #ffffff; /* White background for the canvas */
+    border-radius: 8px;
+    overflow: hidden; /* Important for fabric.js */
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.tool-btn {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--secondary-surface);
+    color: var(--font-color);
+    cursor: pointer;
+    border-radius: 5px;
+}
+.tool-btn:hover {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+#color-palette {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.color-box {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.1s ease;
+}
+.color-box.active {
+    border-color: #fff;
+    transform: scale(1.1);
+}

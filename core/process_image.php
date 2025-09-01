@@ -1,0 +1,125 @@
+<?php
+
+class ImageProcessor {
+
+    /**
+     * Main processing function. Delegates to specific methods based on file type.
+     * @param string $original_filepath Full path to the original uploaded file.
+     * @param string $output_directory Full path to the directory for processed files.
+     * @return string|false The path to the processed file, or false on failure.
+     */
+    public static function process(string $original_filepath, string $output_directory) {
+        $file_extension = strtolower(pathinfo($original_filepath, PATHINFO_EXTENSION));
+        $filename = pathinfo($original_filepath, PATHINFO_FILENAME);
+
+        // The processed file will always be an SVG
+        $processed_filename = $filename . '.svg';
+        $processed_filepath = $output_directory . '/' . $processed_filename;
+
+        switch ($file_extension) {
+            case 'svg':
+                if (self::processSvg($original_filepath, $processed_filepath)) {
+                    return '/uploads/processed/' . $processed_filename;
+                }
+                break;
+            case 'png':
+                if (self::processPng($original_filepath, $processed_filepath)) {
+                    return '/uploads/processed/' . $processed_filename;
+                }
+                break;
+            default:
+                // Unsupported file type
+                return false;
+        }
+        return false;
+    }
+
+    /**
+     * Processes an SVG file to make it ready for coloring.
+     * Ensures all visual elements have a unique ID and standard styles.
+     * @param string $input_svg_path Path to the input SVG.
+     * @param string $output_svg_path Path to save the processed SVG.
+     * @return bool True on success, false on failure.
+     */
+    private static function processSvg(string $input_svg_path, string $output_svg_path): bool {
+        $dom = new DOMDocument();
+        // Preserve white space and formatting
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        if (!@$dom->load($input_svg_path)) {
+            // Error loading SVG
+            return false;
+        }
+
+        $xpath = new DOMXPath($dom);
+        // Target all visual elements that can be filled
+        $elements = $xpath->query('//path | //rect | //circle | //ellipse | //polygon | //polyline | //g');
+
+        $id_counter = 0;
+        foreach ($elements as $element) {
+            // Assign a unique ID if it doesn't have one
+            if (!$element->getAttribute('id')) {
+                $element->setAttribute('id', 'color-region-' . $id_counter++);
+            }
+            // Optional: Standardize styles for easier frontend manipulation
+            // For example, remove existing fill and set a default
+            $element->setAttribute('fill', 'transparent'); // or '#ffffff'
+            $element->setAttribute('stroke', '#000000'); // Keep outlines black
+            $element->setAttribute('stroke-width', '1');
+        }
+
+        if ($dom->save($output_svg_path)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Processes a PNG file by converting it to a colorable SVG using potrace.
+     * @param string $input_png_path Path to the input PNG.
+     * @param string $output_svg_path Path to save the resulting SVG.
+     * @return bool True on success, false on failure.
+     */
+    private static function processPng(string $input_png_path, string $output_svg_path): bool {
+        // Potrace works best on BMP files. We might need to convert PNG -> BMP first.
+        // This requires GD or ImageMagick. Let's assume we can do it.
+        $bmp_path = sys_get_temp_dir() . '/' . uniqid() . '.bmp';
+
+        // --- Step 1: Convert PNG to BMP using GD ---
+        $image = imagecreatefrompng($input_png_path);
+        if (!$image) return false;
+
+        // Potrace needs a two-tone (black and white) image. We can achieve this with imagefilter.
+        imagefilter($image, IMG_FILTER_GRAYSCALE);
+        imagefilter($image, IMG_FILTER_CONTRAST, -1000); // High contrast to force black/white
+
+        if (!imagebmp($image, $bmp_path)) {
+            imagedestroy($image);
+            return false;
+        }
+        imagedestroy($image);
+
+        // --- Step 2: Run Potrace on the BMP file ---
+        // The command needs to be on the system's PATH or specified with a full path.
+        // We assume `potrace` is installed.
+        // -s tells it to output SVG. -o specifies the output file.
+        $command = "potrace " . escapeshellarg($bmp_path) . " -s -o " . escapeshellarg($output_svg_path);
+
+        shell_exec($command);
+
+        // --- Step 3: Clean up the temporary BMP file ---
+        if (file_exists($bmp_path)) {
+            unlink($bmp_path);
+        }
+
+        // --- Step 4: Verify and clean the output SVG ---
+        if (!file_exists($output_svg_path)) {
+            return false; // Potrace failed
+        }
+
+        // The SVG generated by potrace is good, but we should run it through our own
+        // SVG processor to ensure consistent IDs and styles.
+        return self::processSvg($output_svg_path, $output_svg_path);
+    }
+}
+?>

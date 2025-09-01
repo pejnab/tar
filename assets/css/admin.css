@@ -1,0 +1,137 @@
+/* Admin Panel Dark Theme */
+:root {
+    --bg-color: #1a1a2e;
+    --primary-color: #16213e;
+    --secondary-color: #0f3460;
+    --accent-color: #e94560;
+    --font-color: #dcdcdc;
+    --border-color: #535353;
+    --hover-color: #e94560;
+    --table-header-bg: #16213e;
+    --table-row-bg: #0f3460;
+    --table-row-bg-alt: #123d6e;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--font-color);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--primary-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+h1, h2 {
+    color: var(--accent-color);
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+thead {
+    background-color: var(--table-header-bg);
+}
+
+tbody tr {
+    background-color: var(--table-row-bg);
+}
+
+tbody tr:nth-child(odd) {
+    background-color: var(--table-row-bg-alt);
+}
+
+tbody tr:hover {
+    background-color: var(--secondary-color);
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 5px;
+    background-color: var(--accent-color);
+    color: var(--font-color);
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    text-decoration: none;
+}
+
+.btn-danger {
+    background-color: #c0392b;
+}
+
+.btn-secondary {
+    background-color: #2c3e50;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--secondary-color);
+    color: var(--font-color);
+    border-radius: 5px;
+    box-sizing: border-box; /* Important for 100% width */
+}
+
+.message {
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.message.success {
+    background-color: #27ae60;
+    color: #fff;
+}
+
+.message.error {
+    background-color: #c0392b;
+    color: #fff;
+}
