@@ -48,27 +48,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadBlankSVG() {
         fabric.loadSVGFromURL(SVG_PATH, (objects, options) => {
-            const svg = fabric.util.groupSVGElements(objects, options);
-            svg.getObjects().forEach(obj => {
-                obj.set({
-                    selectable: false, evented: true, hasControls: false, hasBorders: false,
-                    lockMovementX: true, lockMovementY: true,
-                });
-            });
+            // Use fabric's parser to get a clean set of objects
+            const loadedObjects = fabric.util.groupSVGElements(objects, options).getObjects();
+
+            // Create a temporary group to handle scaling and centering
+            const group = new fabric.Group(loadedObjects);
 
             // Scale to fit canvas
             const canvasWidth = canvas.getWidth();
             const canvasHeight = canvas.getHeight();
-            const padding = 50; // 50px padding on each side
+            const padding = 50;
 
-            // Scale the group to fit within the canvas, maintaining aspect ratio
-            svg.scaleToWidth(canvasWidth - padding);
-            if (svg.getScaledHeight() > canvasHeight - padding) {
-                svg.scaleToHeight(canvasHeight - padding);
+            group.scaleToWidth(canvasWidth - padding);
+            if (group.getScaledHeight() > canvasHeight - padding) {
+                group.scaleToHeight(canvasHeight - padding);
             }
 
-            canvas.add(svg);
-            svg.center();
+            // Center the group
+            group.center();
+
+            // Ungroup the objects, but keep their calculated positions and scales
+            const items = group.destroy().getObjects();
+
+            items.forEach(item => {
+                item.set({
+                    selectable: false,
+                    evented: true,
+                    hasControls: false,
+                    hasBorders: false,
+                    lockMovementX: true,
+                    lockMovementY: true,
+                });
+                canvas.add(item);
+            });
+
             canvas.renderAll();
             saveState(); // Save initial blank state
             loadingIndicator.style.display = 'none';
@@ -93,13 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return; // Stop further processing
         }
 
-        let target = options.target;
+        const target = options.target;
         if (!target) return;
-
-        // If the main target is a group, find the actual clicked path within it.
-        if (target.isType('group') && options.subTargets && options.subTargets.length > 0) {
-            target = options.subTargets[0];
-        }
 
         if (currentTool === 'fill') {
             // --- Fill Tool Logic ---
@@ -416,11 +424,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     canvas.on('mouse:move', function(opt) {
         if (isPanning) {
-            var e = opt.e;
-            var vpt = this.viewportTransform;
-            vpt[4] += e.clientX - lastPosX;
-            vpt[5] += e.clientY - lastPosY;
-            this.requestRenderAll();
+            const e = opt.e;
+            const delta = new fabric.Point(e.clientX - lastPosX, e.clientY - lastPosY);
+            this.relativePan(delta);
             lastPosX = e.clientX;
             lastPosY = e.clientY;
         }
