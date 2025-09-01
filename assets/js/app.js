@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvasElement = document.getElementById('coloring-canvas');
     if (!canvasElement || !canvasContainer) return;
 
+    // --- DOM Elements ---
+    const loadingIndicator = document.getElementById('loading-indicator');
+
     // --- State management ---
     let currentTool = 'fill'; // 'fill' or 'brush'
     let currentColor = '#BB86FC'; // Default to accent color
@@ -30,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             canvas.renderAll();
                             // Save this loaded state as the initial state
                             saveState();
+                            loadingIndicator.style.display = 'none';
                         });
                     } else {
                         // No progress found, load the blank SVG
@@ -51,10 +55,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     lockMovementX: true, lockMovementY: true,
                 });
             });
+
+            // Scale to fit canvas
+            const canvasWidth = canvas.getWidth();
+            const canvasHeight = canvas.getHeight();
+            const padding = 50; // 50px padding on each side
+
+            // Scale the group to fit within the canvas, maintaining aspect ratio
+            svg.scaleToWidth(canvasWidth - padding);
+            if (svg.getScaledHeight() > canvasHeight - padding) {
+                svg.scaleToHeight(canvasHeight - padding);
+            }
+
             canvas.add(svg);
             svg.center();
             canvas.renderAll();
             saveState(); // Save initial blank state
+            loadingIndicator.style.display = 'none';
         });
     }
 
@@ -67,8 +84,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentClippingShape = null;
 
     canvas.on('mouse:down', (options) => {
-        const target = options.target;
+        // Panning logic takes precedence
+        if (altKeyDown) {
+            isPanning = true;
+            lastPosX = options.e.clientX;
+            lastPosY = options.e.clientY;
+            canvas.defaultCursor = 'grabbing';
+            return; // Stop further processing
+        }
+
+        let target = options.target;
         if (!target) return;
+
+        // If the main target is a group, find the actual clicked path within it.
+        if (target.isType('group') && options.subTargets && options.subTargets.length > 0) {
+            target = options.subTargets[0];
+        }
 
         if (currentTool === 'fill') {
             // --- Fill Tool Logic ---
@@ -90,6 +121,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (target.isType('path') || target.isType('polygon') || target.isType('rect') || target.isType('circle')) {
                 currentClippingShape = target;
                 canvas.clipPath = currentClippingShape;
+            }
+        } else if (currentTool === 'eraser') {
+            // --- Eraser Tool Logic ---
+            if (target.isType('path') || target.isType('polygon') || target.isType('rect') || target.isType('circle')) {
+                target.set('fill', 'transparent');
+                canvas.renderAll();
+                saveState();
             }
         }
     });
@@ -113,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Toolbar UI ---
     const fillToolBtn = document.getElementById('fill-tool-btn');
     const brushToolBtn = document.getElementById('brush-tool-btn');
+    const eraserToolBtn = document.getElementById('eraser-tool-btn');
     const brushOptions = document.getElementById('brush-options');
     const brushSizeSlider = document.getElementById('brush-size');
     const brushSizeLabel = document.getElementById('brush-size-label');
@@ -124,16 +163,19 @@ document.addEventListener('DOMContentLoaded', () => {
             brushOptions.style.display = 'block';
             brushToolBtn.classList.add('active');
             fillToolBtn.classList.remove('active');
-        } else { // fill
+        } else { // fill or eraser
             canvas.isDrawingMode = false;
             brushOptions.style.display = 'none';
-            fillToolBtn.classList.add('active');
-            brushToolBtn.classList.remove('active');
+
+            fillToolBtn.classList.toggle('active', tool === 'fill');
+            brushToolBtn.classList.toggle('active', tool === 'brush');
+            eraserToolBtn.classList.toggle('active', tool === 'eraser');
         }
     }
 
     fillToolBtn.addEventListener('click', () => setTool('fill'));
     brushToolBtn.addEventListener('click', () => setTool('brush'));
+    eraserToolBtn.addEventListener('click', () => setTool('eraser'));
 
     // Brush properties
     canvas.freeDrawingBrush.color = currentColor;
@@ -342,4 +384,54 @@ document.addEventListener('DOMContentLoaded', () => {
         doc.addImage(dataURL, 'PNG', 0, 0, pdfWidth, pdfHeight);
         doc.save('coloring-masterpiece.pdf');
     });
+
+    // --- Zoom and Pan Logic ---
+    let isPanning = false;
+    let lastPosX, lastPosY;
+    let altKeyDown = false;
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Alt') {
+            altKeyDown = true;
+            canvas.defaultCursor = 'grab';
+        }
+    });
+    window.addEventListener('keyup', (e) => {
+        if (e.key === 'Alt') {
+            altKeyDown = false;
+            canvas.defaultCursor = 'default';
+        }
+    });
+
+    canvas.on('mouse:wheel', function(opt) {
+        var delta = opt.e.deltaY;
+        var zoom = canvas.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > 20) zoom = 20; // Max zoom
+        if (zoom < 0.1) zoom = 0.1; // Min zoom
+        canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+    });
+
+    canvas.on('mouse:move', function(opt) {
+        if (isPanning) {
+            var e = opt.e;
+            var vpt = this.viewportTransform;
+            vpt[4] += e.clientX - lastPosX;
+            vpt[5] += e.clientY - lastPosY;
+            this.requestRenderAll();
+            lastPosX = e.clientX;
+            lastPosY = e.clientY;
+        }
+    });
+
+    canvas.on('mouse:up', function(opt) {
+        this.setViewportTransform(this.viewportTransform);
+        isPanning = false;
+        if (altKeyDown) {
+            canvas.defaultCursor = 'grab';
+        }
+    });
+
 });

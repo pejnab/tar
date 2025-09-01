@@ -44,6 +44,7 @@ require_once __DIR__ . '/templates/header.php';
             <div class="tool-group">
                 <button id="fill-tool-btn" class="tool-btn active">Fill</button>
                 <button id="brush-tool-btn" class="tool-btn">Brush</button>
+                <button id="eraser-tool-btn" class="tool-btn">Eraser</button>
             </div>
             <div id="brush-options" style="display: none;">
                 <label for="brush-size">Size: <span id="brush-size-label">10</span></label>
@@ -65,7 +66,11 @@ require_once __DIR__ . '/templates/header.php';
             <label for="custom-color" style="margin-top: 10px;">Custom Color</label>
             <input type="color" id="custom-color" value="#FFFFFF">
         </div>
-        <div id="canvas-container">
+        <div id="canvas-container" style="position: relative;">
+            <div id="loading-indicator">
+                <div class="spinner"></div>
+                <p>Loading Design...</p>
+            </div>
             <canvas id="coloring-canvas"></canvas>
         </div>
     </div>
